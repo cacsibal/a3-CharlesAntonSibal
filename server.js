@@ -33,6 +33,9 @@ const connectDB = async function() {
         console.error(error);
     }
 }
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard.html'));
+    res.sendFile(path.join(__dirname, 'login.html'));
 })
+
+connectDB().catch(console.dir);
