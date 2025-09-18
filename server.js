@@ -54,6 +54,35 @@ app.get('/api/categories', async (req, res) => {
         console.error(error);
         res.status(500).json({error: 'An error occurred while fetching categories'});
     }
+});
+
+app.post('/api/tasks', async (req, res) => {
+    try {
+        const {name, description, dueDate, category} = req.body;
+
+        if(!name || !name.trim()) return res.status(400).json({error: 'Name is required'});
+
+        const db = client.db('todo_list');
+        const collection = db.collection('tasks');
+
+        const task = {
+            name: name.trim(),
+            description: description?.trim() || '',
+            dueDate: dueDate || null,
+            category: category || 'Uncategorized',
+            completed: false
+        };
+
+        const result = await collection.insertOne(task);
+
+        res.status(201).json({
+            message: 'Task created successfully',
+            taskId: result.insertedId
+        })
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({error: 'An error occurred while creating the task'});
+    }
 })
 
 connectDB().catch(console.dir);
