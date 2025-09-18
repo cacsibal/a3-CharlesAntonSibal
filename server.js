@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const PORT = process.env.PORT || 3000;
+const path = require('path');
 
 app.use(express.static('public'));
 app.use(express.json())
@@ -23,7 +24,7 @@ const connectDB = async function() {
     try {
         await client.connect();
 
-        client.db("admin").command({ping: 1});
+        await client.db("admin").command({ping: 1});
         console.log("Pinged your deployment. You successfully connected to the MongoDB.");
 
         app.listen(PORT, () => {
@@ -36,6 +37,19 @@ const connectDB = async function() {
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
+})
+
+app.get('/api/categories', async (req, res) => {
+    try {
+        const db = client.db('todo_list');
+        const collection = db.collection('categories');
+
+        const categories = await collection.find().toArray();
+        res.json(categories);
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({error: 'An error occurred while fetching categories'});
+    }
 })
 
 connectDB().catch(console.dir);
