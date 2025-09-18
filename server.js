@@ -36,7 +36,11 @@ const connectDB = async function() {
 }
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
+    res.sendFile(path.join(__dirname, 'views/login.html'));
+})
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views/dashboard.html'));
 })
 
 app.get('/api/categories', async (req, res) => {
