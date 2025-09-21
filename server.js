@@ -56,6 +56,32 @@ app.get('/api/categories', async (req, res) => {
     }
 });
 
+app.post('/api/categories', async (req, res) => {
+    try {
+        const {input} = req.body;
+
+        if(!input || !input.trim()) return res.status(400).json({error: 'Category is required'});
+
+        const db = client.db('todo_list');
+        const collection = db.collection('categories');
+
+        const category = {
+            category: input.trim()
+        }
+
+        const result = await collection.insertOne(category);
+
+        res.status(201).json({
+            message: 'Category created successfully',
+            categoryId: result.insertedId,
+            category: input.trim()
+        })
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({error: 'An error occurred while creating the category'});
+    }
+})
+
 app.post('/api/tasks', async (req, res) => {
     try {
         const {name, description, dueDate, category} = req.body;
