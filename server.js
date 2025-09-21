@@ -43,6 +43,19 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/dashboard.html'));
 })
 
+app.get('/api/tasks', async (req, res) => {
+    try {
+        const db = client.db('todo_list');
+        const collection = db.collection('tasks');
+
+        const tasks = await collection.find().toArray();
+        res.json(tasks);
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({error: 'An error occurred while fetching tasks'});
+    }
+})
+
 app.get('/api/categories', async (req, res) => {
     try {
         const db = client.db('todo_list');
