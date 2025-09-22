@@ -177,12 +177,12 @@ app.post('/register', async (req, res) => {
 /**
  * returns all tasks
  */
-app.get('/api/tasks', async (req, res) => {
+app.get('/api/tasks', isAuthenticated, async (req, res) => {
     try {
         const db = client.db('todo_list');
         const collection = db.collection('tasks');
 
-        const tasks = await collection.find().toArray();
+        const tasks = await collection.find({userId: req.user._id}).toArray();
         res.json(tasks);
     } catch(error) {
         console.error(error);
