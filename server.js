@@ -35,14 +35,23 @@ const connectDB = async function() {
     }
 }
 
+/**
+ * returns the login page
+ */
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/login.html'));
 })
 
+/**
+ * returns the dashboard page
+ */
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/dashboard.html'));
 })
 
+/**
+ * returns all tasks
+ */
 app.get('/api/tasks', async (req, res) => {
     try {
         const db = client.db('todo_list');
@@ -56,6 +65,9 @@ app.get('/api/tasks', async (req, res) => {
     }
 })
 
+/**
+ * returns all categories
+ */
 app.get('/api/categories', async (req, res) => {
     try {
         const db = client.db('todo_list');
@@ -69,6 +81,9 @@ app.get('/api/categories', async (req, res) => {
     }
 });
 
+/**
+ * sends a new category to the db
+ */
 app.post('/api/categories', async (req, res) => {
     try {
         const {input} = req.body;
@@ -95,6 +110,9 @@ app.post('/api/categories', async (req, res) => {
     }
 })
 
+/**
+ * sends a new task to the db
+ */
 app.post('/api/tasks', async (req, res) => {
     try {
         const {name, description, dueDate, category} = req.body;
