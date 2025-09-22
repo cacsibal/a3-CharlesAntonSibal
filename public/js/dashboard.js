@@ -14,16 +14,20 @@ const renderCategoryList = function () {
 }
 
 const populateCategorySelect = async function () {
-    await fetch('/api/categories')
-        .then(res => res.json())
-        .then(resCategories => {
-            for (const category of resCategories) {
-                categories.push(category.category)
-            }
-        })
-        .catch(err => console.error(err));
+    try {
+        const res = await fetch('/api/categories');
 
-    renderCategoryList();
+        if (!res.ok) throw new Error(`Error status: ${res.status}`);
+
+        const resCategories = await res.json();
+        for (const category of resCategories) {
+            categories.push(category.category)
+        }
+
+        renderCategoryList();
+    } catch(err) {
+        console.error(err)
+    }
 }
 
 const addCategory = async function () {
