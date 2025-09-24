@@ -82,8 +82,12 @@ passport.deserializeUser(async(id, done) => {
 });
 
 const isAuthenticated = (req, res, next) => {
+    // console.log('Auth check - isAuthenticated():', req.isAuthenticated());
+    // console.log('Auth check - user:', req.user ? req.user.username : 'No user');
+    // console.log('Auth check - session:', req.session);
+
     if(req.isAuthenticated()) return next();
-    res.redirect('/');
+    res.redirect('/login');
 }
 
 const connectDB = async function() {
@@ -105,6 +109,7 @@ const connectDB = async function() {
  * returns the login page
  */
 app.get('/', (req, res) => {
+    if(req.isAuthenticated()) return res.redirect('/dashboard');
     res.sendFile(path.join(__dirname, 'views/login.html'));
 })
 
@@ -112,11 +117,20 @@ app.get('/', (req, res) => {
  * returns the dashboard page
  */
 app.get('/dashboard', isAuthenticated, (req, res) => {
+    if(!req.isAuthenticated()) return res.redirect('/login');
     res.sendFile(path.join(__dirname, 'views/dashboard.html'));
 })
 
 app.get('/login', (req, res) => {
+    if(req.isAuthenticated()) return res.redirect('/dashboard');
     res.sendFile(path.join(__dirname, 'views/login.html'));
+})
+
+app.get('/api/user', isAuthenticated, (req, res) => {
+    res.json({
+        username: req.user.username,
+        id: req.user._id,
+    })
 })
 
 app.post('/login', passport.authenticate('local', {
@@ -124,6 +138,17 @@ app.post('/login', passport.authenticate('local', {
     failureRedirect: '/login',
     failureFlash: true,
 }));
+
+app.post('/logout', (req, res) => {
+    req.logout((err) => {
+        if(err) return res.status(500).json({error: 'An error occurred while logging out'});
+
+        req.session.destroy(() => {
+            res.clearCookie('connect.sid');
+            res.redirect('/login');
+        })
+    })
+});
 
 app.post('/register', async (req, res) => {
     try {
@@ -182,7 +207,7 @@ app.get('/api/tasks', isAuthenticated, async (req, res) => {
         const db = client.db('todo_list');
         const collection = db.collection('tasks');
 
-        const tasks = await collection.find({userId: req.user._id}).toArray();
+        const tasks = await collection.find({userId: req.user}).toArray();
         res.json(tasks);
     } catch(error) {
         console.error(error);
@@ -198,7 +223,14 @@ app.get('/api/categories', isAuthenticated, async (req, res) => {
         const db = client.db('todo_list');
         const collection = db.collection('categories');
 
-        const categories = await collection.find({userId: req.user._id}).toArray();
+        const categories = await collection.find({
+            $or: [
+                {user: req.user._id},
+                {user: req.user._id.toString()},
+                {user: '*'},
+            ]
+        })
+            .toArray();
         res.json(categories);
     } catch(error) {
         console.error(error);
@@ -211,7 +243,9 @@ app.get('/api/categories', isAuthenticated, async (req, res) => {
  */
 app.post('/api/categories', isAuthenticated, async (req, res) => {
     try {
-        const {input} = req.body;
+        const {user, input} = req.body;
+
+        console.log(req.body);
 
         if(!input || !input.trim()) return res.status(400).json({error: 'Category is required'});
 
@@ -219,8 +253,8 @@ app.post('/api/categories', isAuthenticated, async (req, res) => {
         const collection = db.collection('categories');
 
         const category = {
+            user: user,
             category: input.trim(),
-            userId: req.user._id
         }
 
         const result = await collection.insertOne(category);
@@ -241,7 +275,7 @@ app.post('/api/categories', isAuthenticated, async (req, res) => {
  */
 app.post('/api/tasks', isAuthenticated, async (req, res) => {
     try {
-        const {name, description, dueDate, category} = req.body;
+        const {user, name, description, dueDate, category} = req.body;
 
         if(!name || !name.trim()) return res.status(400).json({error: 'Name is required'});
 
@@ -249,12 +283,12 @@ app.post('/api/tasks', isAuthenticated, async (req, res) => {
         const collection = db.collection('tasks');
 
         const task = {
+            user: user,
             name: name.trim(),
             description: description?.trim() || '',
             dueDate: dueDate || null,
             category: category || 'Uncategorized',
             completed: false,
-            userId: req.user._id,
         };
 
         const result = await collection.insertOne(task);

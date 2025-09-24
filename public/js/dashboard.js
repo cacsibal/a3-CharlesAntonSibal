@@ -1,5 +1,7 @@
-const categories = []
-const tasks = []
+const categories = [];
+const tasks = [];
+let sessionUser = null;
+let sessionUserId = null;
 
 const renderCategoryList = function () {
     const categorySelect = document.getElementById('category-select');
@@ -16,8 +18,6 @@ const renderCategoryList = function () {
 const populateCategorySelect = async function () {
     try {
         const res = await fetch('/api/categories');
-
-        if (!res.ok) throw new Error(`Error status: ${res.status}`);
 
         const resCategories = await res.json();
         for (const category of resCategories) {
@@ -44,6 +44,7 @@ const addCategory = async function () {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            user: sessionUserId,
             input: newCategoryValue
         })
     }).then(res => {
@@ -111,6 +112,7 @@ const addTask = async function () {
     const newTaskCategory = document.getElementById('category-select').value.trim();
 
     const newTask = {
+        user: sessionUserId,
         name: newTaskName,
         description: newTaskDescription,
         dueDate: newTaskDueDate,
@@ -134,7 +136,56 @@ const addTask = async function () {
         });
 }
 
+const populateWelcomeUser = async function () {
+    try {
+        const res = await fetch('/api/user');
+        const user = await res.json();
+
+        sessionUser = user.username;
+        sessionUserId = user.id;
+
+        const welcomeUser = document.getElementById('welcome-user');
+        welcomeUser.textContent = `Welcome, ${sessionUser}!`;
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+const logout = async function () {
+    try {
+        const res = await fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if(res.ok) {
+            categories.length = 0;
+            tasks.length = 0;
+            window.location.href = res.redirect || '/login';
+        }
+    } catch(err) {
+        console.error(err);
+        window.location.href = '/login';
+    }
+}
+
 window.onload = function () {
+    const addCategoryButton = document.getElementById('add-category-button');
+    addCategoryButton.onclick = addCategory;
+
+    const addTaskButton = document.getElementById('add-task-button');
+    addTaskButton.onclick = addTask;
+
+    const logoutButton = document.getElementById('logout-button');
+    logoutButton.onclick = logout;
+
+    populateWelcomeUser()
+        .then(() => console.log('user populated'))
+        .catch(err => console.error(err));
+
+
     populateCategorySelect()
         .then(() => console.log('categories populated'))
         .catch(err => console.error(err));
@@ -142,10 +193,4 @@ window.onload = function () {
     populateTasks()
         .then(() => console.log('tasks populated'))
         .catch(err => console.error(err))
-
-    const addCategoryButton = document.getElementById('add-category-button');
-    addCategoryButton.onclick = addCategory;
-
-    const addTaskButton = document.getElementById('add-task-button');
-    addTaskButton.onclick = addTask;
 }
