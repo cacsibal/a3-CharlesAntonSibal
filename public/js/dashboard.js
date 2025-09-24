@@ -88,28 +88,32 @@ const renderTaskList = function () {
 }
 
 const populateTasks = async function () {
-    await fetch('/api/tasks', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(res => res.json())
-        .then(resTasks => {
-            for (const task of resTasks) {
-                tasks.push(task);
-            }
-        })
-        .catch(err => console.error(err));
+    try {
+        const res = await fetch('/api/tasks');
+        const resTasks = await res.json();
 
-    renderTaskList();
+        for (const task of resTasks) {
+            tasks.push(task);
+        }
+
+        renderTaskList();
+    } catch(err) {
+        console.error(err);
+    }
 }
 
 const addTask = async function () {
-    const newTaskName = document.getElementById('task-name-input').value.trim();
-    const newTaskDescription = document.getElementById('task-description-input').value.trim();
-    const newTaskDueDate = document.getElementById('due-date-input').value.trim();
-    const newTaskCategory = document.getElementById('category-select').value.trim();
+    const taskNameField = document.getElementById('task-name-input');
+    const newTaskName = taskNameField.value.trim();
+
+    const taskDescriptionField = document.getElementById('task-description-input');
+    const newTaskDescription = taskDescriptionField.value.trim();
+
+    const taskDueDateField = document.getElementById('task-due-date-input');
+    const newTaskDueDate = taskDueDateField.trim();
+
+    const taskCategoryField = document.getElementById('task-category-input');
+    const newTaskCategory = taskCategoryField.value.trim();
 
     const newTask = {
         user: sessionUserId,
@@ -132,6 +136,11 @@ const addTask = async function () {
             if(res.ok) {
                 tasks.push(newTask);
                 renderTask(newTask);
+
+                taskNameField.value.clear();
+                taskDescriptionField.value.clear();
+                taskDueDateField.value.clear();
+                taskCategoryField.value.clear();
             }
         });
 }
@@ -184,7 +193,6 @@ window.onload = function () {
     populateWelcomeUser()
         .then(() => console.log('user populated'))
         .catch(err => console.error(err));
-
 
     populateCategorySelect()
         .then(() => console.log('categories populated'))

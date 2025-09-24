@@ -207,7 +207,8 @@ app.get('/api/tasks', isAuthenticated, async (req, res) => {
         const db = client.db('todo_list');
         const collection = db.collection('tasks');
 
-        const tasks = await collection.find({userId: req.user}).toArray();
+        const tasks = await collection.find({user: req.user._id.toString()}).toArray();
+        console.log(tasks);
         res.json(tasks);
     } catch(error) {
         console.error(error);
@@ -301,6 +302,10 @@ app.post('/api/tasks', isAuthenticated, async (req, res) => {
         console.error(error);
         res.status(500).json({error: 'An error occurred while creating the task'});
     }
+})
+
+app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
+
 })
 
 connectDB().catch(console.dir);
