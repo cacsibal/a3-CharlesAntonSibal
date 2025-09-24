@@ -313,37 +313,30 @@ app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
             if (updates.hasOwnProperty(field)) {
                 let value = updates[field];
 
-                // Handle string fields
                 if (typeof value === 'string') {
                     updateFields[field] = value.trim();
                 }
-                // Handle boolean fields
                 else if (typeof value === 'boolean') {
                     updateFields[field] = value;
                 }
-                // Handle null/undefined for optional fields
                 else if (value === null || value === undefined) {
                     if (field === 'dueDate' || field === 'description') {
                         updateFields[field] = value;
                     }
                 }
-                // For other types, only accept primitive values
+
                 else if (typeof value === 'number') {
                     updateFields[field] = value;
-                } else {
-                    console.warn(`Skipping field ${field} with invalid type:`, typeof value, value);
                 }
             }
         }
 
         console.log('Processed updateFields:', JSON.stringify(updateFields, null, 2));
 
-        // Check if there are any fields to update
         if (Object.keys(updateFields).length === 0) {
             return res.status(400).json({ error: 'No valid fields to update' });
         }
 
-        // Validate required fields if they're being updated
         if (updateFields.hasOwnProperty('name') && (!updateFields.name || updateFields.name === '')) {
             return res.status(400).json({ error: 'Task name cannot be empty' });
         }
@@ -354,7 +347,7 @@ app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
         const query = await collection.updateOne(
             {
                 _id: new ObjectId(id),
-                user: req.user._id.toString()
+                user: req.user._id.toString(),
             },
             {
                 $set: updateFields

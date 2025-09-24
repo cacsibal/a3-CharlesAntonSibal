@@ -95,18 +95,24 @@ const renderTask = function (task) {
 
     if(task.completed) taskElement.classList.add('completed');
 
+    const slugName = slugify(task.name);
+
     taskElement.innerHTML = `
             <div class="task-name">${task.name}</div>
             <div class="task-description">${task.description}</div>
             <div class="task-due-date">${task.dueDate}</div>
             <div class="task-category">${task.category}</div>
             <div class="task-completed">
-                <input type="checkbox" id="checkbox-${slugify(task.name)}" ${task.completed ? 'checked' : ''}>
+                <input type="checkbox" id="checkbox-${slugName}" ${task.completed ? 'checked' : ''}>
                 <label for="checkbox-${task.name}">Completed</label>
+            </div>
+            <div class="task-actions">
+                <button class="edit-task-button" id="edit-task-button-${slugName}">Edit</button>
+                <button class="delete-task-button" id="delete-task-button-${slugName}>Delete</button>
             </div>
         `;
 
-    const checkbox = taskElement.querySelector(`#checkbox-${slugify(task.name)}`);
+    const checkbox = taskElement.querySelector(`#checkbox-${slugName}`);
     checkbox.addEventListener('change', () => {
         const isCompleted = checkbox.checked;
         toggleTask(task._id, isCompleted)
@@ -114,6 +120,12 @@ const renderTask = function (task) {
                 if(isCompleted) taskElement.classList.add('completed');
                 else taskElement.classList.remove('completed');
             });
+    })
+
+    const editButton = taskElement.querySelector(`#edit-task-button-${slugName}`);
+    editButton.addEventListener('click', () => {
+        console.log('edit button clicked');
+
     })
 
     taskDisplay.appendChild(taskElement);
