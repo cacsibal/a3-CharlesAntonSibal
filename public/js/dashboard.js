@@ -64,11 +64,37 @@ const addCategory = async function () {
 
 const slugify = (str) => str.toLowerCase().replace(/\s+/g, '-');
 
+const toggleTask = async function (taskId, isCompleted) {
+    try {
+        const res = await fetch(`/api/tasks/${taskId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                completed: isCompleted
+            })
+        });
+
+        const taskIndex = tasks.findIndex(task => task._id === taskId);
+        if(taskIndex !== -1) {
+            tasks[taskIndex].completed = isCompleted;
+        }
+
+        console.log('task toggled');
+    } catch(err) {
+        console.error(err);
+    }
+}
+
 const renderTask = function (task) {
     const taskDisplay = document.getElementById('task-display');
     const taskElement = document.createElement('div');
     taskElement.classList.add('task');
     taskElement.id = task.name;
+
+    if(task.completed) taskElement.classList.add('completed');
+
     taskElement.innerHTML = `
             <div class="task-name">${task.name}</div>
             <div class="task-description">${task.description}</div>
@@ -79,6 +105,16 @@ const renderTask = function (task) {
                 <label for="checkbox-${task.name}">Completed</label>
             </div>
         `;
+
+    const checkbox = taskElement.querySelector(`#checkbox-${slugify(task.name)}`);
+    checkbox.addEventListener('change', () => {
+        const isCompleted = checkbox.checked;
+        toggleTask(task._id, isCompleted)
+            .then(() => {
+                if(isCompleted) taskElement.classList.add('completed');
+                else taskElement.classList.remove('completed');
+            });
+    })
 
     taskDisplay.appendChild(taskElement);
 }

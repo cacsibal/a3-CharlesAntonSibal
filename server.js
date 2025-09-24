@@ -208,7 +208,6 @@ app.get('/api/tasks', isAuthenticated, async (req, res) => {
         const collection = db.collection('tasks');
 
         const tasks = await collection.find({user: req.user._id.toString()}).toArray();
-        console.log(tasks);
         res.json(tasks);
     } catch(error) {
         console.error(error);
@@ -245,8 +244,6 @@ app.get('/api/categories', isAuthenticated, async (req, res) => {
 app.post('/api/categories', isAuthenticated, async (req, res) => {
     try {
         const {user, input} = req.body;
-
-        console.log(req.body);
 
         if(!input || !input.trim()) return res.status(400).json({error: 'Category is required'});
 
@@ -305,7 +302,37 @@ app.post('/api/tasks', isAuthenticated, async (req, res) => {
 })
 
 app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {completed} = req.body;
 
+        const db = client.db('todo_list');
+        const collection = db.collection('tasks');
+
+        const query = await collection.updateOne(
+            {
+                _id: new ObjectId(id),
+                user: req.user._id.toString()
+            },
+            {
+                $set: {
+                    completed: completed
+                }
+            }
+        );
+
+        if(query.matchedCount === 0) return res.status(404).json({ error: "task not found"});
+
+        res.json({
+            message: 'Task updated successfully',
+            taskId: id,
+            completed: completed
+        });
+        console.log(`Task updated successfully: ${id}`);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while updating the task'});
+    }
 })
 
 connectDB().catch(console.dir);
