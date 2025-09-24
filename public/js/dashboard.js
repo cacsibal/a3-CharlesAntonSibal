@@ -98,18 +98,26 @@ const renderTask = function (task) {
     const slugName = slugify(task.name);
 
     taskElement.innerHTML = `
-            <div class="task-name">${task.name}</div>
-            <div class="task-description">${task.description}</div>
-            <div class="task-due-date">${task.dueDate}</div>
-            <div class="task-category">${task.category}</div>
-            <div class="task-completed">
-                <input type="checkbox" id="checkbox-${slugName}" ${task.completed ? 'checked' : ''}>
-                <label for="checkbox-${task.name}">Completed</label>
-            </div>
-            <div class="task-actions">
-                <button class="edit-task-button" id="edit-task-button-${slugName}">Edit</button>
-                <button class="delete-task-button" id="delete-task-button-${slugName}>Delete</button>
-            </div>
+            <article class="task" id="${task._id}">
+                <header class="task-header">
+                    <h3 class="task-name">${task.name}</h3>
+                    <span class="task-category badge">${task.category}</span>
+                </header>
+    
+                <p class="task-description">${task.description}</p>
+    
+                <time class="task-due-date" datetime="${task.dueDate}">Due: ${task.dueDate}</time>
+    
+                <div class="task-status">
+                    <input type="checkbox" id="checkbox-${slugName}" ${task.completed ? 'checked' : ''}>
+                    <label for="checkbox-${slugName}">Completed</label>
+                </div>
+    
+                <footer class="task-actions">
+                    <button class="edit-task-button" id="edit-task-button-${slugName}">Edit</button>
+                    <button class="delete-task-button" id="delete-task-button-${slugName}">Delete</button>
+                </footer>
+            </article>
         `;
 
     const checkbox = taskElement.querySelector(`#checkbox-${slugName}`);
@@ -127,6 +135,34 @@ const renderTask = function (task) {
         console.log('edit button clicked');
 
     })
+
+    const deleteButton = taskElement.querySelector(`#delete-task-button-${slugName}`);
+    deleteButton.addEventListener('click', async () => {
+        try {
+            const res = await fetch(`/api/tasks/${task._id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if(res.ok) {
+                console.log('task deleted');
+
+                const taskIndex = tasks.findIndex(t => t._id === task._id);
+                if(taskIndex !== -1) {
+                    tasks.splice(taskIndex, 1);
+                }
+
+                const taskElement = document.getElementById(task.name);
+                taskElement.remove();
+            } else {
+                console.error(await res.json());
+            }
+        } catch(err) {
+            console.error(err);
+        }
+    });
 
     taskDisplay.appendChild(taskElement);
 }

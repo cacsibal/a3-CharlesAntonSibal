@@ -373,4 +373,29 @@ app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
     }
 })
 
+app.delete('/api/tasks/:id', isAuthenticated, async (req, res) => {
+    try {
+        const {id} = req.params;
+
+        const db = client.db('todo_list');
+        const collection = db.collection('tasks');
+
+        const query = await collection.deleteOne({
+            _id: new ObjectId(id),
+            user: req.user._id.toString(),
+        });
+
+        if(query.deletedCount === 0) return res.status(404).json({ error: "task not found"});
+
+        res.json({
+            message: 'Task deleted successfully',
+            deletedId: id,
+        });
+        console.log(`Task deleted successfully: ${id}`);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while deleting the task'});
+    }
+})
+
 connectDB().catch(console.dir);
