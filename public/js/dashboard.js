@@ -87,6 +87,169 @@ const toggleTask = async function (taskId, isCompleted) {
     }
 }
 
+const editTask = function(task, taskElement, slugName) {
+    const taskHeader = taskElement.querySelector('.task-header');
+    const taskName = taskElement.querySelector('.task-name');
+    const taskCategory = taskElement.querySelector('.task-category');
+    const taskDescription = taskElement.querySelector('.task-description');
+    const taskDueDate = taskElement.querySelector('.task-due-date');
+    const taskActions = taskElement.querySelector('.task-actions');
+
+    const originalName = task.name;
+    const originalDescription = task.description;
+    const originalDueDate = task.dueDate;
+    const originalCategory = task.category;
+
+    const editButton = taskElement.querySelector(`#edit-task-button-${slugName}`);
+    editButton.style.display = 'none';
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = originalName;
+    nameInput.className = 'edit-task-name';
+    taskName.replaceWith(nameInput);
+
+    const descriptionTextarea = document.createElement('textarea');
+    descriptionTextarea.value = originalDescription;
+    descriptionTextarea.className = 'edit-task-description';
+    descriptionTextarea.rows = 3;
+    taskDescription.replaceWith(descriptionTextarea);
+
+    const dueDateInput = document.createElement('input');
+    dueDateInput.type = 'date';
+    dueDateInput.value = originalDueDate;
+    dueDateInput.className = 'edit-task-due-date';
+    taskDueDate.replaceWith(dueDateInput);
+
+    const categorySelect = document.createElement('select');
+    categorySelect.className = 'edit-task-category badge';
+
+    for (const category of categories) {
+        const option = document.createElement('option');
+        option.value = category;
+        option.text = category;
+        if (category === originalCategory) {
+            option.selected = true;
+        }
+        categorySelect.appendChild(option);
+    }
+    taskCategory.replaceWith(categorySelect);
+
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.className = 'cancel-edit-button';
+
+    const doneButton = document.createElement('button');
+    doneButton.textContent = 'Done';
+    doneButton.className = 'done-edit-button';
+
+    const deleteButton = taskElement.querySelector(`#delete-task-button-${slugName}`);
+    taskActions.insertBefore(cancelButton, deleteButton);
+    taskActions.insertBefore(doneButton, deleteButton);
+
+    cancelButton.addEventListener('click', () => {
+        const newTaskName = document.createElement('h3');
+        newTaskName.className = 'task-name';
+        newTaskName.textContent = originalName;
+        nameInput.replaceWith(newTaskName);
+
+        const newTaskDescription = document.createElement('p');
+        newTaskDescription.className = 'task-description';
+        newTaskDescription.textContent = originalDescription;
+        descriptionTextarea.replaceWith(newTaskDescription);
+
+        const newTaskDueDate = document.createElement('time');
+        newTaskDueDate.className = 'task-due-date';
+        newTaskDueDate.datetime = originalDueDate;
+        newTaskDueDate.textContent = `Due: ${originalDueDate}`;
+        dueDateInput.replaceWith(newTaskDueDate);
+
+        const newTaskCategory = document.createElement('span');
+        newTaskCategory.className = 'task-category badge';
+        newTaskCategory.textContent = originalCategory;
+        categorySelect.replaceWith(newTaskCategory);
+
+        cancelButton.remove();
+        doneButton.remove();
+        editButton.style.display = 'inline-block';
+    });
+
+    doneButton.addEventListener('click', async () => {
+        const newName = nameInput.value.trim();
+        const newDescription = descriptionTextarea.value.trim();
+        const newDueDate = dueDateInput.value;
+        const newCategory = categorySelect.value;
+
+        if (!newName) {
+            alert('Task name is required');
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/tasks/${task._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: newName,
+                    description: newDescription,
+                    dueDate: newDueDate,
+                    category: newCategory
+                })
+            });
+
+            if (res.ok) {
+                const result = await res.json();
+                console.log('Task updated successfully');
+
+                task.name = newName;
+                task.description = newDescription;
+                task.dueDate = newDueDate;
+                task.category = newCategory;
+
+                const taskIndex = tasks.findIndex(t => t._id === task._id);
+                if (taskIndex !== -1) {
+                    tasks[taskIndex] = { ...tasks[taskIndex], ...task };
+                }
+
+                const newTaskName = document.createElement('h3');
+                newTaskName.className = 'task-name';
+                newTaskName.textContent = newName;
+                nameInput.replaceWith(newTaskName);
+
+                const newTaskDescription = document.createElement('p');
+                newTaskDescription.className = 'task-description';
+                newTaskDescription.textContent = newDescription;
+                descriptionTextarea.replaceWith(newTaskDescription);
+
+                const newTaskDueDate = document.createElement('time');
+                newTaskDueDate.className = 'task-due-date';
+                newTaskDueDate.datetime = newDueDate;
+                newTaskDueDate.textContent = `Due: ${newDueDate}`;
+                dueDateInput.replaceWith(newTaskDueDate);
+
+                const newTaskCategory = document.createElement('span');
+                newTaskCategory.className = 'task-category badge';
+                newTaskCategory.textContent = newCategory;
+                categorySelect.replaceWith(newTaskCategory);
+
+                cancelButton.remove();
+                doneButton.remove();
+                editButton.style.display = 'inline-block';
+
+            } else {
+                const error = await res.json();
+                console.error('Error updating task:', error);
+                alert('Error updating task: ' + (error.error || 'Unknown error'));
+            }
+        } catch (err) {
+            console.error('Error updating task:', err);
+            alert('Error updating task. Please try again.');
+        }
+    });
+};
+
 const renderTask = function (task) {
     const taskDisplay = document.getElementById('task-display');
     const taskElement = document.createElement('div');
@@ -132,9 +295,8 @@ const renderTask = function (task) {
 
     const editButton = taskElement.querySelector(`#edit-task-button-${slugName}`);
     editButton.addEventListener('click', () => {
-        console.log('edit button clicked');
-
-    })
+        editTask(task, taskElement, slugName);
+    });
 
     const deleteButton = taskElement.querySelector(`#delete-task-button-${slugName}`);
     deleteButton.addEventListener('click', async () => {
