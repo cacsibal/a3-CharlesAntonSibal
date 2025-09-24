@@ -148,9 +148,9 @@ const addTask = async function () {
     const newTaskDescription = taskDescriptionField.value.trim();
 
     const taskDueDateField = document.getElementById('task-due-date-input');
-    const newTaskDueDate = taskDueDateField.trim();
+    const newTaskDueDate = taskDueDateField.value.trim();
 
-    const taskCategoryField = document.getElementById('task-category-input');
+    const taskCategoryField = document.getElementById('category-select');
     const newTaskCategory = taskCategoryField.value.trim();
 
     const newTask = {
@@ -163,7 +163,6 @@ const addTask = async function () {
     };
 
     await fetch('/api/tasks', {
-
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -172,13 +171,15 @@ const addTask = async function () {
     })
         .then(res => {
             if(res.ok) {
+                console.log("task added");
+
                 tasks.push(newTask);
                 renderTask(newTask);
 
-                taskNameField.value.clear();
-                taskDescriptionField.value.clear();
-                taskDueDateField.value.clear();
-                taskCategoryField.value.clear();
+                taskNameField.value = '';
+                taskDescriptionField.value = '';
+                taskDueDateField.value = '';
+                taskCategoryField.value = '';
             }
         });
 }
