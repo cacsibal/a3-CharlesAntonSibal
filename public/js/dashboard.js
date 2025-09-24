@@ -62,6 +62,8 @@ const addCategory = async function () {
     });
 }
 
+const slugify = (str) => str.toLowerCase().replace(/\s+/g, '-');
+
 const renderTask = function (task) {
     const taskDisplay = document.getElementById('task-display');
     const taskElement = document.createElement('div');
@@ -73,7 +75,7 @@ const renderTask = function (task) {
             <div class="task-due-date">${task.dueDate}</div>
             <div class="task-category">${task.category}</div>
             <div class="task-completed">
-                <input type="checkbox" id="checkbox-${task.name}" ${task.completed ? 'checked' : ''}>
+                <input type="checkbox" id="checkbox-${slugify(task.name)}" ${task.completed ? 'checked' : ''}>
                 <label for="checkbox-${task.name}">Completed</label>
             </div>
         `;
