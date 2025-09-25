@@ -2,7 +2,7 @@ const loginOrRegister = async function () {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
 
-    if(!username || !password) {
+    if (!username || !password) {
         console.error('Username and password are required');
         return;
     }
@@ -21,15 +21,17 @@ const loginOrRegister = async function () {
             body: JSON.stringify(userAttempt)
         });
 
-        if(res.ok) {
+        if (res.ok) {
             const data = await res.json();
-            if(data.redirect) window.location.href = data.redirect;
+            if (data.redirect) window.location.href = data.redirect;
             else console.log(data.message);
-        } else if(res.status === 400) {
+        } else if (res.status === 400) {
             const errorData = await res.json();
             console.error(errorData.error);
         } else console.error('An error occurred');
-    } catch(error) { console.error(error) }
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 window.onload = function () {

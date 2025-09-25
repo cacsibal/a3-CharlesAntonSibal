@@ -25,7 +25,7 @@ const populateCategorySelect = async function () {
         }
 
         renderCategoryList();
-    } catch(err) {
+    } catch (err) {
         console.error(err)
     }
 }
@@ -33,7 +33,7 @@ const populateCategorySelect = async function () {
 const addCategory = async function () {
     const newCategoryValue = document.getElementById('add-category-input').value.trim();
 
-    if(!newCategoryValue) {
+    if (!newCategoryValue) {
         console.error('Category input is empty');
         return;
     }
@@ -48,7 +48,7 @@ const addCategory = async function () {
             input: newCategoryValue
         })
     }).then(res => {
-        if(res.ok) {
+        if (res.ok) {
             if (!categories.includes(newCategoryValue)) {
                 categories.push(newCategoryValue);
             }
@@ -77,17 +77,17 @@ const toggleTask = async function (taskId, isCompleted) {
         });
 
         const taskIndex = tasks.findIndex(task => task._id === taskId);
-        if(taskIndex !== -1) {
+        if (taskIndex !== -1) {
             tasks[taskIndex].completed = isCompleted;
         }
 
         console.log('task toggled');
-    } catch(err) {
+    } catch (err) {
         console.error(err);
     }
 }
 
-const editTask = function(task, taskElement, slugName) {
+const editTask = function (task, taskElement, slugName) {
     const taskName = taskElement.querySelector('.task-name');
     const taskCategory = taskElement.querySelector('.task-category');
     const taskDescription = taskElement.querySelector('.task-description');
@@ -209,7 +209,7 @@ const editTask = function(task, taskElement, slugName) {
 
                 const taskIndex = tasks.findIndex(t => t._id === task._id);
                 if (taskIndex !== -1) {
-                    tasks[taskIndex] = { ...tasks[taskIndex], ...task };
+                    tasks[taskIndex] = {...tasks[taskIndex], ...task};
                 }
 
                 const newTaskName = document.createElement('h3');
@@ -255,7 +255,7 @@ const renderTask = function (task) {
     taskElement.classList.add('task');
     taskElement.id = task.name;
 
-    if(task.completed) taskElement.classList.add('completed');
+    if (task.completed) taskElement.classList.add('completed');
 
     const slugName = slugify(task.name);
 
@@ -287,7 +287,7 @@ const renderTask = function (task) {
         const isCompleted = checkbox.checked;
         toggleTask(task._id, isCompleted)
             .then(() => {
-                if(isCompleted) taskElement.classList.add('completed');
+                if (isCompleted) taskElement.classList.add('completed');
                 else taskElement.classList.remove('completed');
             });
     })
@@ -307,11 +307,11 @@ const renderTask = function (task) {
                 }
             });
 
-            if(res.ok) {
+            if (res.ok) {
                 console.log('task deleted');
 
                 const taskIndex = tasks.findIndex(t => t._id === task._id);
-                if(taskIndex !== -1) {
+                if (taskIndex !== -1) {
                     tasks.splice(taskIndex, 1);
                 }
 
@@ -320,7 +320,7 @@ const renderTask = function (task) {
             } else {
                 console.error(await res.json());
             }
-        } catch(err) {
+        } catch (err) {
             console.error(err);
         }
     });
@@ -344,7 +344,7 @@ const populateTasks = async function () {
         }
 
         renderTaskList();
-    } catch(err) {
+    } catch (err) {
         console.error(err);
     }
 }
@@ -379,7 +379,7 @@ const addTask = async function () {
         body: JSON.stringify(newTask)
     })
         .then(res => {
-            if(res.ok) {
+            if (res.ok) {
                 console.log("task added");
 
                 tasks.push(newTask);
@@ -403,7 +403,7 @@ const populateWelcomeUser = async function () {
 
         const welcomeUser = document.getElementById('welcome-user');
         welcomeUser.textContent = `Welcome, ${sessionUser}!`;
-    } catch(err) {
+    } catch (err) {
         console.error(err);
     }
 }
@@ -417,12 +417,12 @@ const logout = async function () {
             }
         });
 
-        if(res.ok) {
+        if (res.ok) {
             categories.length = 0;
             tasks.length = 0;
             window.location.href = res.redirect || '/login';
         }
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         window.location.href = '/login';
     }

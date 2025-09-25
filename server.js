@@ -1,8 +1,8 @@
-if(process.env.NODE_ENV !== 'production') require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') require('dotenv').config();
 
 const express = require('express');
 const app = express();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const {MongoClient, ServerApiVersion, ObjectId} = require('mongodb');
 const PORT = process.env.PORT || 3000;
 const path = require('path');
 const passport = require('passport');
@@ -43,20 +43,20 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new LocalStrategy(
-    async(username, password, done) => {
+    async (username, password, done) => {
         try {
             const db = client.db('todo_list');
             const collection = db.collection('users');
 
             const user = await collection.findOne({username});
 
-            if(!user) return done(null, false, {message: 'Incorrect username'});
+            if (!user) return done(null, false, {message: 'Incorrect username'});
 
             const isMatch = await bcrypt.compare(password, user.password);
-            if(!isMatch) return done(null, false, {message: 'Incorrect password'});
+            if (!isMatch) return done(null, false, {message: 'Incorrect password'});
 
             return done(null, user);
-        } catch(error) {
+        } catch (error) {
             return done(error);
         }
     }
@@ -66,17 +66,17 @@ passport.serializeUser((user, done) => {
     done(null, user._id);
 });
 
-passport.deserializeUser(async(id, done) => {
+passport.deserializeUser(async (id, done) => {
     try {
         const db = client.db('todo_list');
         const collection = db.collection('users');
 
         const user = await collection.findOne({_id: new ObjectId(id)});
 
-        if(!user) return done(null, false);
+        if (!user) return done(null, false);
 
         return done(null, user);
-    } catch(error) {
+    } catch (error) {
         return done(error);
     }
 });
@@ -86,11 +86,11 @@ const isAuthenticated = (req, res, next) => {
     // console.log('Auth check - user:', req.user ? req.user.username : 'No user');
     // console.log('Auth check - session:', req.session);
 
-    if(req.isAuthenticated()) return next();
+    if (req.isAuthenticated()) return next();
     res.redirect('/login');
 }
 
-const connectDB = async function() {
+const connectDB = async function () {
     try {
         await client.connect();
 
@@ -100,7 +100,7 @@ const connectDB = async function() {
         app.listen(PORT, () => {
             console.log("Server listening on port " + PORT);
         })
-    } catch(error) {
+    } catch (error) {
         console.error(error);
     }
 }
@@ -109,7 +109,7 @@ const connectDB = async function() {
  * returns the login page
  */
 app.get('/', (req, res) => {
-    if(req.isAuthenticated()) return res.redirect('/dashboard');
+    if (req.isAuthenticated()) return res.redirect('/dashboard');
     res.sendFile(path.join(__dirname, 'views/login.html'));
 })
 
@@ -117,12 +117,12 @@ app.get('/', (req, res) => {
  * returns the dashboard page
  */
 app.get('/dashboard', isAuthenticated, (req, res) => {
-    if(!req.isAuthenticated()) return res.redirect('/login');
+    if (!req.isAuthenticated()) return res.redirect('/login');
     res.sendFile(path.join(__dirname, 'views/dashboard.html'));
 })
 
 app.get('/login', (req, res) => {
-    if(req.isAuthenticated()) return res.redirect('/dashboard');
+    if (req.isAuthenticated()) return res.redirect('/dashboard');
     res.sendFile(path.join(__dirname, 'views/login.html'));
 })
 
@@ -141,7 +141,7 @@ app.post('/login', passport.authenticate('local', {
 
 app.post('/logout', (req, res) => {
     req.logout((err) => {
-        if(err) return res.status(500).json({error: 'An error occurred while logging out'});
+        if (err) return res.status(500).json({error: 'An error occurred while logging out'});
 
         req.session.destroy(() => {
             res.clearCookie('connect.sid');
@@ -154,18 +154,18 @@ app.post('/register', async (req, res) => {
     try {
         const {username, password} = req.body;
 
-        if(!username || !password) return res.status(400).json({error: 'Username and password are required'});
+        if (!username || !password) return res.status(400).json({error: 'Username and password are required'});
 
         const db = client.db('todo_list');
         const usersCollection = db.collection('users');
 
         const existingUser = await usersCollection.findOne({username});
 
-        if(existingUser) {
+        if (existingUser) {
             const isValid = await bcrypt.compare(password, existingUser.password);
-            if(isValid) {
+            if (isValid) {
                 return req.login(existingUser, (err) => {
-                    if(err) return res.status(500).json({error: 'An error occurred while logging in'});
+                    if (err) return res.status(500).json({error: 'An error occurred while logging in'});
 
                     return res.json({
                         message: 'Logged in successfully',
@@ -190,10 +190,10 @@ app.post('/register', async (req, res) => {
 
         const user = await usersCollection.findOne({_id: result.insertedId});
         req.login(user, (err) => {
-            if(err) return res.status(500).json({error: 'An error occurred while logging in'});
+            if (err) return res.status(500).json({error: 'An error occurred while logging in'});
             else res.json({message: 'User registered successfully', redirect: '/dashboard'});
         })
-    } catch(error) {
+    } catch (error) {
         console.error(error);
         res.status(500).json({error: 'An error occurred while registering the user'});
     }
@@ -209,7 +209,7 @@ app.get('/api/tasks', isAuthenticated, async (req, res) => {
 
         const tasks = await collection.find({user: req.user._id.toString()}).toArray();
         res.json(tasks);
-    } catch(error) {
+    } catch (error) {
         console.error(error);
         res.status(500).json({error: 'An error occurred while fetching tasks'});
     }
@@ -232,7 +232,7 @@ app.get('/api/categories', isAuthenticated, async (req, res) => {
         })
             .toArray();
         res.json(categories);
-    } catch(error) {
+    } catch (error) {
         console.error(error);
         res.status(500).json({error: 'An error occurred while fetching categories'});
     }
@@ -245,7 +245,7 @@ app.post('/api/categories', isAuthenticated, async (req, res) => {
     try {
         const {user, input} = req.body;
 
-        if(!input || !input.trim()) return res.status(400).json({error: 'Category is required'});
+        if (!input || !input.trim()) return res.status(400).json({error: 'Category is required'});
 
         const db = client.db('todo_list');
         const collection = db.collection('categories');
@@ -262,7 +262,7 @@ app.post('/api/categories', isAuthenticated, async (req, res) => {
             categoryId: result.insertedId,
             category: input.trim()
         })
-    } catch(error) {
+    } catch (error) {
         console.error(error);
         res.status(500).json({error: 'An error occurred while creating the category'});
     }
@@ -275,7 +275,7 @@ app.post('/api/tasks', isAuthenticated, async (req, res) => {
     try {
         const {user, name, description, dueDate, category} = req.body;
 
-        if(!name || !name.trim()) return res.status(400).json({error: 'Name is required'});
+        if (!name || !name.trim()) return res.status(400).json({error: 'Name is required'});
 
         const db = client.db('todo_list');
         const collection = db.collection('tasks');
@@ -295,7 +295,7 @@ app.post('/api/tasks', isAuthenticated, async (req, res) => {
             message: 'Task created successfully',
             taskId: result.insertedId
         })
-    } catch(error) {
+    } catch (error) {
         console.error(error);
         res.status(500).json({error: 'An error occurred while creating the task'});
     }
@@ -315,17 +315,13 @@ app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
 
                 if (typeof value === 'string') {
                     updateFields[field] = value.trim();
-                }
-                else if (typeof value === 'boolean') {
+                } else if (typeof value === 'boolean') {
                     updateFields[field] = value;
-                }
-                else if (value === null || value === undefined) {
+                } else if (value === null || value === undefined) {
                     if (field === 'dueDate' || field === 'description') {
                         updateFields[field] = value;
                     }
-                }
-
-                else if (typeof value === 'number') {
+                } else if (typeof value === 'number') {
                     updateFields[field] = value;
                 }
             }
@@ -334,11 +330,11 @@ app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
         console.log('Processed updateFields:', JSON.stringify(updateFields, null, 2));
 
         if (Object.keys(updateFields).length === 0) {
-            return res.status(400).json({ error: 'No valid fields to update' });
+            return res.status(400).json({error: 'No valid fields to update'});
         }
 
         if (updateFields.hasOwnProperty('name') && (!updateFields.name || updateFields.name === '')) {
-            return res.status(400).json({ error: 'Task name cannot be empty' });
+            return res.status(400).json({error: 'Task name cannot be empty'});
         }
 
         const db = client.db('todo_list');
@@ -354,7 +350,7 @@ app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
             }
         );
 
-        if(query.matchedCount === 0) return res.status(404).json({ error: "task not found"});
+        if (query.matchedCount === 0) return res.status(404).json({error: "task not found"});
 
         const updatedTask = await collection.findOne({
             _id: new ObjectId(id),
@@ -367,9 +363,9 @@ app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
             updatedFields: Object.keys(updateFields),
         });
         console.log(`Task updated successfully: ${id}`);
-    } catch(err) {
+    } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'An error occurred while updating the task'});
+        res.status(500).json({error: 'An error occurred while updating the task'});
     }
 })
 
@@ -385,16 +381,16 @@ app.delete('/api/tasks/:id', isAuthenticated, async (req, res) => {
             user: req.user._id.toString(),
         });
 
-        if(query.deletedCount === 0) return res.status(404).json({ error: "task not found"});
+        if (query.deletedCount === 0) return res.status(404).json({error: "task not found"});
 
         res.json({
             message: 'Task deleted successfully',
             deletedId: id,
         });
         console.log(`Task deleted successfully: ${id}`);
-    } catch(err) {
+    } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'An error occurred while deleting the task'});
+        res.status(500).json({error: 'An error occurred while deleting the task'});
     }
 })
 
