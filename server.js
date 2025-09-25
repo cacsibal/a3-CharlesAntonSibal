@@ -13,7 +13,6 @@ const bcrypt = require('bcryptjs');
 
 app.use(express.static('public'));
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
 
 const uri = process.env.MONGODB_URI;
 
