@@ -88,7 +88,6 @@ const toggleTask = async function (taskId, isCompleted) {
 }
 
 const editTask = function(task, taskElement, slugName) {
-    const taskHeader = taskElement.querySelector('.task-header');
     const taskName = taskElement.querySelector('.task-name');
     const taskCategory = taskElement.querySelector('.task-category');
     const taskDescription = taskElement.querySelector('.task-description');
@@ -256,12 +255,16 @@ const renderTask = function (task) {
     taskElement.classList.add('task');
     taskElement.id = task.name;
 
+    if(tasks.length !== 0) {
+        document.getElementById('task-display').innerHTML = '';
+    }
+
     if(task.completed) taskElement.classList.add('completed');
 
     const slugName = slugify(task.name);
 
     taskElement.innerHTML = `
-            <article class="task" id="${task._id}">
+            <article class="task-item" id="${task._id}">
                 <header class="task-header">
                     <h3 class="task-name">${task.name}</h3>
                     <span class="task-category badge">${task.category}</span>
@@ -311,6 +314,10 @@ const renderTask = function (task) {
             if(res.ok) {
                 console.log('task deleted');
 
+                if(tasks.length === 0) {
+                    document.getElementById('task-display').innerHTML = '<p class="empty-message">Your tasks will appear here</p>';
+                }
+
                 const taskIndex = tasks.findIndex(t => t._id === task._id);
                 if(taskIndex !== -1) {
                     tasks.splice(taskIndex, 1);
@@ -330,6 +337,12 @@ const renderTask = function (task) {
 }
 
 const renderTaskList = function () {
+    if(tasks.length === 0) {
+        const taskDisplay = document.getElementById('task-display');
+        taskDisplay.innerHTML = '<p class="empty-message">Your tasks will appear here</p>';
+        return;
+    }
+
     for (const task of tasks) {
         renderTask(task);
     }

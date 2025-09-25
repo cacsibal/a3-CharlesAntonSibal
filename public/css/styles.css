@@ -1,0 +1,371 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+:root {
+    --primary: #0f766e;
+    --secondary: #059669;
+    --accent: #dc2626;
+    --background: #fefefe;
+    --card-bg: #ffffff;
+    --text-primary: #374151;
+    --text-secondary: #6b7280;
+    --border: #d1d5db;
+}
+
+body {
+    font-family: 'Ubuntu', serif;
+    background-color: var(--background);
+}
+
+/* ==== header styling ====*/
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--card-bg);
+}
+
+#logout-button {
+    background-color: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#logout-button:hover {
+    background-color: #b91c1c; /* darker red on hover */
+}
+
+/* ==== add category styling ==== */
+.add-category-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    max-width: 400px;
+}
+
+.add-category-container label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.add-category-container input {
+    width: calc(100% - 90px);
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.add-category-container button {
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-category-container button:hover {
+    background-color: var(--secondary);
+}
+
+/* ==== add task styling ==== */
+.add-task-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+
+    width: 90%;
+    max-width: 1200px;
+}
+
+.add-task-container label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 12px;
+}
+
+.add-task-container input,
+.add-task-container textarea,
+.add-task-container select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    font-family: 'Ubuntu', sans-serif;
+    box-sizing: border-box;
+}
+
+.add-task-container textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.add-task-container button {
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-task-container button:hover {
+    background-color: var(--secondary);
+}
+
+/* ==== task display styling ==== */
+.task {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.task:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+/* Header */
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.task-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.task-category.badge {
+    background-color: var(--secondary);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+/* Description */
+.task-description {
+    color: var(--text-secondary);
+    margin: 8px 0 12px;
+    line-height: 1.4;
+}
+
+/* Due date */
+.task-due-date {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+/* Status */
+.task-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.task-status input[type="checkbox"] {
+    accent-color: var(--primary);
+}
+
+/* Footer actions */
+.task-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.task-actions button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.edit-task-button {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+.edit-task-button:hover {
+    background-color: var(--secondary);
+}
+
+.delete-task-button {
+    background-color: var(--accent);
+    color: #fff;
+}
+
+.delete-task-button:hover {
+    background-color: #b91c1c;
+}
+
+.edit-task-name,
+.edit-task-description,
+.edit-task-due-date,
+.edit-task-category {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'Ubuntu', sans-serif;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.edit-task-name:focus,
+.edit-task-description:focus,
+.edit-task-due-date:focus,
+.edit-task-category:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+    outline: none;
+}
+
+.edit-task-name {
+    font-weight: 500;
+}
+
+.edit-task-description {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.4;
+}
+
+.edit-task-due-date {
+    max-width: 250px;
+}
+
+.edit-task-category {
+    background-color: #fff;
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.edit-task-category.badge {
+    border-radius: 12px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+#task-display {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: var(--card-bg);
+}
+
+/* ==== login page styling ==== */
+.login-page {
+    font-family: 'Ubuntu', sans-serif;
+    background-color: var(--background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    gap: 40px;
+    padding: 40px;
+}
+
+h1 {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.content-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.content-container label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 12px 0 6px;
+}
+
+.content-container input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.content-container input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+    outline: none;
+}
+
+#login {
+    width: 100%;
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#login:hover {
+    background-color: var(--secondary);
+}
+
+.content-container,
+.information-container {
+    padding: 20px;
+    flex: 1;
+    max-width: 500px;
+}

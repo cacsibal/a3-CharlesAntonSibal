@@ -4,17 +4,32 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="/js/login.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body>
-    <h1>Login</h1>
-    <div>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username">
+<body class="login-page">
+    <div class="content-container">
+        <h1>Todo List Web App</h1>
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username">
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
 
-        <button id="login">Login</button>
+            <button id="login">Login</button>
+        </div>
+    </div>
+    <div class="information-container">
+        <p class="description">
+            <strong>Description: </strong>
+            This is a simple web app designed to help manage tasks. It allows users to add, edit, and delete tasks.
+        </p>
+        <p class="instructions">
+            <strong>Instructions:</strong>
+            To sign up, enter username and password and the account will be made automatically upon pressing the login button.
+            If you already have an account, please enter your username and password to log in.
+            In your dashboard, you can add, edit, delete, and mark tasks as completed. You can also create categories to organize your tasks.
+        </p>
     </div>
 </body>
 </html>

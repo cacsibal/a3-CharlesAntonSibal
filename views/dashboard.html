@@ -4,17 +4,22 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="/js/dashboard.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <h1 id="welcome-user"></h1>
-    <button id="logout-button">Logout</button>
-    <div>
+    <header>
+        <h1 id="welcome-user"></h1>
+        <button id="logout-button">Logout</button>
+    </header>
+
+    <div class="add-category-container">
         <label for="add-category-input">Add category:</label>
         <input type="text" id="add-category-input">
 
         <button id="add-category-button">Add</button>
     </div>
-    <div>
+
+    <div class="add-task-container">
         <label for="task-name-input">Task name:</label>
         <input type="text" id="task-name-input">
 
