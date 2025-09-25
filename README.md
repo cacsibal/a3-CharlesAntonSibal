@@ -34,3 +34,7 @@ and more organized. I believe this deserves 3 points because of the time it took
 I'm not including this as a tech achievement, but I maintained >90 on all 4 lighthouse scores throughout the development of the project.
 
 Sum: 20 points
+
+## Known Issues
+
+The app does not display when a password is incorrect or a user already exists. Errors are logged in the console, though.
