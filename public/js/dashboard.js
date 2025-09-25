@@ -255,10 +255,6 @@ const renderTask = function (task) {
     taskElement.classList.add('task');
     taskElement.id = task.name;
 
-    if(tasks.length !== 0) {
-        document.getElementById('task-display').innerHTML = '';
-    }
-
     if(task.completed) taskElement.classList.add('completed');
 
     const slugName = slugify(task.name);
@@ -314,10 +310,6 @@ const renderTask = function (task) {
             if(res.ok) {
                 console.log('task deleted');
 
-                if(tasks.length === 0) {
-                    document.getElementById('task-display').innerHTML = '<p class="empty-message">Your tasks will appear here</p>';
-                }
-
                 const taskIndex = tasks.findIndex(t => t._id === task._id);
                 if(taskIndex !== -1) {
                     tasks.splice(taskIndex, 1);
@@ -337,12 +329,6 @@ const renderTask = function (task) {
 }
 
 const renderTaskList = function () {
-    if(tasks.length === 0) {
-        const taskDisplay = document.getElementById('task-display');
-        taskDisplay.innerHTML = '<p class="empty-message">Your tasks will appear here</p>';
-        return;
-    }
-
     for (const task of tasks) {
         renderTask(task);
     }

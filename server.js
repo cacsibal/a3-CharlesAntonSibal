@@ -346,7 +346,7 @@ app.put('/api/tasks/:id', isAuthenticated, async (req, res) => {
 
         const query = await collection.updateOne(
             {
-                _id: new ObjectId(id),
+                _id: new ObjectId(req.params.id),
                 user: req.user._id.toString(),
             },
             {
